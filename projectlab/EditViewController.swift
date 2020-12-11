@@ -2,20 +2,73 @@
 //  EditViewController.swift
 //  projectlab
 //
-//  Created by Natalia Fellyana on 08/12/20.
+//  Created by Kendra Arsena on 11/12/20.
 //
 
 import UIKit
+import CoreData
 
 class EditViewController: UIViewController {
 
+    @IBOutlet weak var txtTitle: UITextField!
+    @IBOutlet weak var txtContent: UITextField!
+    @IBOutlet weak var txtPublish: UITextField!
+    @IBOutlet weak var txtWriter: UITextField!
+    
+    var newstitle:String?
+    var content:String?
+    var publish:String?
+    var writer:String?
+    var index:Int?
+    
+    var context:NSManagedObjectContext!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        txtWriter.text = writer
+        txtTitle.text = newstitle
+        txtPublish.text = publish
+        txtContent.text = content
         // Do any additional setup after loading the view.
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        context = appDelegate.persistentContainer.viewContext
     }
     
-
+    func updateData(){
+        let oldTitle = arrNews[index!].title
+        let newTitle = txtTitle.text!
+        let newContent = txtContent.text!
+        let newPublish = txtPublish.text!
+        let newWriter = txtWriter.text!
+        
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
+        request.predicate = NSPredicate(format: "title==%@", oldTitle!)
+        
+        do {
+            let results = try context.fetch(request) as! [NSManagedObject]
+            for data in results {
+                data.setValue(newTitle, forKey: "title")
+                data.setValue(newWriter, forKey: "writer")
+                data.setValue(newContent, forKey: "content")
+                data.setValue(newPublish, forKey: "publishDate")
+            }
+            
+            try context.save()
+        } catch {
+            print("update failed")
+        }
+    }
+    
+    @IBAction func btnSave(_ sender: Any) {
+        if (txtTitle.text!.isEmpty || txtContent.text!.isEmpty || txtPublish.text!.isEmpty || txtWriter.text!.isEmpty) {
+            
+        }
+        else {
+            updateData()
+            performSegue(withIdentifier: "updated", sender: self)
+        }
+    }
+    
     /*
     // MARK: - Navigation
 
