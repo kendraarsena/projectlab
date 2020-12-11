@@ -6,37 +6,72 @@
 //
 
 import UIKit
+import CoreData
 
-class CreateViewController: UIViewController {
+class CreateViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var txtTitle: UITextField!
-    @IBOutlet weak var txtDesc: UITextField!
-    @IBOutlet weak var txtDueDate: UITextField!
-    @IBOutlet weak var segAssigned: UISegmentedControl!
-    @IBOutlet weak var lblComment: UILabel!
-    @IBOutlet weak var txtComment: UITextField!
-    @IBOutlet weak var lblStatus: UILabel!
-    @IBOutlet weak var segStatus: UISegmentedControl!
+    @IBOutlet weak var txtContent: UITextField!
+    @IBOutlet weak var txtPublish: UITextField!
+    @IBOutlet weak var txtWriter: UITextField!
+    @IBOutlet weak var img: UIImageView!
+    
+    var context:NSManagedObjectContext!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (segAssigned.titleForSegment(at: segAssigned.selectedSegmentIndex) == "Me") {
-            lblComment.isHidden = false
-            txtComment.isHidden = false
-            lblStatus.isHidden = false
-            segStatus.isHidden = false
-        } else {
-            lblComment.isHidden = true
-            txtComment.isHidden = true
-            lblStatus.isHidden = true
-            segStatus.isHidden = true
-        }
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        context = appDelegate.persistentContainer.viewContext
         // Do any additional setup after loading the view.
     }
     
-    func refresh(){
+    @IBAction func btnUpload(_ sender: Any) {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
+        picker.sourceType = .photoLibrary
+        present(picker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let userPickedImage = info[.editedImage] as? UIImage else { return }
         
+        img.image = userPickedImage
+        picker.dismiss(animated: true)
+    }
+    
+    @IBAction func btnSave(_ sender: Any) {
+        let title = txtTitle.text!
+        let content = txtContent.text!
+        let publish = txtPublish.text!
+        let writer = txtWriter.text!
+//        let image = img!
+        if (title.isEmpty || content.isEmpty || publish.isEmpty || writer.isEmpty) {
+            showAlert(title: "Error", message: "All Field must be Filled")
+        }
+        else {
+            let entity = NSEntityDescription.entity(forEntityName: "News", in: context)
+            let addNews = NSManagedObject(entity: entity!, insertInto: context)
+            addNews.setValue(title, forKey: "title")
+            addNews.setValue(content, forKey: "content")
+            addNews.setValue(publish, forKey: "publishDate")
+            addNews.setValue(writer, forKey: "writer")
+//            addNews.setValue(image, forKey: "image")
+            do {
+                try context.save()
+            } catch {
+                print("save failed")
+            }
+            performSegue(withIdentifier: "save", sender: self)
+        }
+    }
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
     }
     /*
     // MARK: - Navigation
