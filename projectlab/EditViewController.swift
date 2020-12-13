@@ -89,14 +89,20 @@ class EditViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         }
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @IBAction func btnDelete(_ sender: Any) {
+        let title = arrNews[index!].title
+        let requests = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
+        requests.predicate = NSPredicate(format: "title==%@", title!)
+        
+        do {
+            let results = try context.fetch(requests) as! [NSManagedObject]
+            for data in results {
+                context.delete(data)
+            }
+            try context.save()
+            performSegue(withIdentifier: "updated", sender: self)
+        } catch {
+            print("delete failed")
+        }
     }
-    */
-
 }
