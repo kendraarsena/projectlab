@@ -79,6 +79,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
+
         // Do any additional setup after loading the view.
         loadData()
     }
