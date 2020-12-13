@@ -14,11 +14,13 @@ class ReadViewController: UIViewController {
     @IBOutlet weak var lblWriter: UILabel!
     @IBOutlet weak var lblPublish: UILabel!
     @IBOutlet weak var lblContent: UILabel!
+    @IBOutlet weak var image: UIImageView!
     
     var newstitle:String?
     var content:String?
     var publish:String?
     var writer:String?
+    var thumbnail:Data?
     var index:Int?
     
     override func viewDidLoad() {
@@ -27,6 +29,7 @@ class ReadViewController: UIViewController {
         lblPublish.text = publish
         lblContent.text = content
         lblWriter.text = writer
+        image.image = UIImage(data: thumbnail!)
         // Do any additional setup after loading the view.
     }
     
@@ -41,6 +44,7 @@ class ReadViewController: UIViewController {
             dest.content = content
             dest.publish = publish
             dest.writer = writer
+            dest.thumbnail = thumbnail
             dest.index = index!
         }
     }

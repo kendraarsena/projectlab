@@ -5,6 +5,7 @@
 //  Created by Natalia Fellyana on 08/12/20.
 //
 
+import Foundation
 import UIKit
 import CoreData
 
@@ -17,6 +18,8 @@ class CreateViewController: UIViewController, UIImagePickerControllerDelegate, U
     @IBOutlet weak var img: UIImageView!
     
     var context:NSManagedObjectContext!
+    
+    var image:UIImage?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,24 +49,46 @@ class CreateViewController: UIViewController, UIImagePickerControllerDelegate, U
         let content = txtContent.text!
         let publish = txtPublish.text!
         let writer = txtWriter.text!
-//        let image = img!
+        
         if (title.isEmpty || content.isEmpty || publish.isEmpty || writer.isEmpty) {
             showAlert(title: "Error", message: "All Field must be Filled")
         }
         else {
-            let entity = NSEntityDescription.entity(forEntityName: "News", in: context)
-            let addNews = NSManagedObject(entity: entity!, insertInto: context)
-            addNews.setValue(title, forKey: "title")
-            addNews.setValue(content, forKey: "content")
-            addNews.setValue(publish, forKey: "publishDate")
-            addNews.setValue(writer, forKey: "writer")
-//            addNews.setValue(image, forKey: "image")
-            do {
-                try context.save()
-            } catch {
-                print("save failed")
+            if let image = img.image?.pngData(){
+                saveData(at: image)
+                performSegue(withIdentifier: "save", sender: self)
             }
-            performSegue(withIdentifier: "save", sender: self)
+            else{
+                showAlert(title: "Error", message: "Choose photo")
+            }
+        }
+    }
+    
+    func saveData(at image: Data){
+        let title = txtTitle.text!
+        let content = txtContent.text!
+        let publish = txtPublish.text!
+        let writer = txtWriter.text!
+        
+//        let entity = NSEntityDescription.entity(forEntityName: "News", in: context)
+//        let addNews = NSManagedObject(entity: entity!, insertInto: context)
+        let addNews = NSEntityDescription.insertNewObject(forEntityName: "News", into: context) as! News
+        addNews.image = image
+        addNews.title = title
+        addNews.content = content
+        addNews.writer = writer
+        addNews.publishDate = publish
+
+//        addNews.setValue(title, forKey: "title")
+//        addNews.setValue(content, forKey: "content")
+//        addNews.setValue(publish, forKey: "publishDate")
+//        addNews.setValue(writer, forKey: "writer")
+//        addNews.setValue(image, forKey: "image")
+        
+        do {
+            try context.save()
+        } catch {
+            print("save failed")
         }
     }
     

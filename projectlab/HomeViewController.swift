@@ -13,9 +13,10 @@ struct news{
     var content:String?
     var writer:String?
     var publishDate:String?
+    var image:UIImage?
 }
 
-var arrNews = [news]()
+var arrNews = [News]()
 
 class Table: UITableViewCell{
     @IBOutlet weak var title: UILabel!
@@ -36,7 +37,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! Table
         cell.title.text = arrNews[indexPath.row].title
         cell.desc.text = arrNews[indexPath.row].content
-//        cell.onUpdateHandler = {self.updateData(cell: cell, indexPath: indexPath)}
+        cell.thumbnail.image = UIImage(data: arrNews[indexPath.row].image!)
         return cell
     }
     
@@ -63,6 +64,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             dest.writer = arrNews[cellnum!].writer
             dest.content = arrNews[cellnum!].content
             dest.publish = arrNews[cellnum!].publishDate
+            dest.thumbnail = arrNews[cellnum!].image
             dest.index = cellnum
         }
     }
@@ -80,31 +82,42 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
         // Do any additional setup after loading the view.
-        loadData()
+//        loadData()
+        arrNews = loadData()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+        return 100
     }
     
     @IBAction func btnAdd(_ sender: Any) {
         performSegue(withIdentifier: "add", sender: self)
     }
     
-    func loadData(){
+//    func loadData(){
+//        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
+//        arrNews.removeAll()
+//        do {
+//            let results = try context.fetch(request) as! [NSManagedObject]
+//            for data in results{
+//                arrNews.append(news(title: (data.value(forKey: "title") as! String), content: (data.value(forKey: "content") as! String), writer: (data.value(forKey: "writer") as! String), publishDate: (data.value(forKey: "publishDate") as! String), image: UIImage(data: )))
+//            }
+//            tableView.reloadData()
+//        }
+//        catch {
+//
+//        }
+//    }
+    
+    func loadData() -> [News] {
+        var arr = [News]()
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
-        arrNews.removeAll()
-        
         do {
-            let results = try context.fetch(request) as! [NSManagedObject]
-            for data in results{
-                arrNews.append(news(title: data.value(forKey: "title") as! String, content: data.value(forKey: "content") as! String, writer: data.value(forKey: "writer") as! String, publishDate: data.value(forKey: "publishDate") as! String))
-            }
-            tableView.reloadData()
+            arr = try context.fetch(request) as! [News]
+        } catch {
+            print("fetch failed")
         }
-        catch {
-            
-        }
+        return arr
     }
     
     func deleteData(indexPath: IndexPath) {
@@ -118,7 +131,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 context.delete(data)
             }
             try context.save()
-            loadData()
+            arrNews = loadData()
+            tableView.reloadData()
         } catch {
             print("delete failed")
         }

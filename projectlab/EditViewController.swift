@@ -8,17 +8,19 @@
 import UIKit
 import CoreData
 
-class EditViewController: UIViewController {
+class EditViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var txtTitle: UITextField!
     @IBOutlet weak var txtContent: UITextField!
     @IBOutlet weak var txtPublish: UITextField!
     @IBOutlet weak var txtWriter: UITextField!
+    @IBOutlet weak var image: UIImageView!
     
     var newstitle:String?
     var content:String?
     var publish:String?
     var writer:String?
+    var thumbnail: Data?
     var index:Int?
     
     var context:NSManagedObjectContext!
@@ -29,6 +31,7 @@ class EditViewController: UIViewController {
         txtTitle.text = newstitle
         txtPublish.text = publish
         txtContent.text = content
+        image.image = UIImage(data: thumbnail!)
         // Do any additional setup after loading the view.
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
@@ -40,6 +43,7 @@ class EditViewController: UIViewController {
         let newContent = txtContent.text!
         let newPublish = txtPublish.text!
         let newWriter = txtWriter.text!
+        let newImage = self.image.image?.pngData()
         
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
         request.predicate = NSPredicate(format: "title==%@", oldTitle!)
@@ -51,12 +55,28 @@ class EditViewController: UIViewController {
                 data.setValue(newWriter, forKey: "writer")
                 data.setValue(newContent, forKey: "content")
                 data.setValue(newPublish, forKey: "publishDate")
+                data.setValue(newImage, forKey: "image")
             }
             
             try context.save()
         } catch {
             print("update failed")
         }
+    }
+    
+    @IBAction func btnUpload(_ sender: Any) {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
+        picker.sourceType = .photoLibrary
+        present(picker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let userPickedImage = info[.editedImage] as? UIImage else { return }
+        
+        image.image = userPickedImage
+        picker.dismiss(animated: true)
     }
     
     @IBAction func btnSave(_ sender: Any) {
