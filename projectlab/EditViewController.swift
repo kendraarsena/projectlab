@@ -23,6 +23,8 @@ class EditViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     var thumbnail: Data?
     var index:Int?
     
+    let datePicker = UIDatePicker()
+    
     var context:NSManagedObjectContext!
     
     override func viewDidLoad() {
@@ -35,6 +37,7 @@ class EditViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         // Do any additional setup after loading the view.
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
+        createDatePicker()
     }
     
     func updateData(){
@@ -87,6 +90,27 @@ class EditViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             updateData()
             performSegue(withIdentifier: "updated", sender: self)
         }
+    }
+    
+    func createDatePicker(){
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let doneBtn = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(done))
+        toolbar.setItems([doneBtn], animated: true)
+        
+        txtPublish.inputAccessoryView = toolbar
+        txtPublish.inputView = datePicker
+        datePicker.datePickerMode = .date
+    }
+    
+    @objc func done(){
+        let format = DateFormatter()
+        format.dateStyle = .medium
+        format.timeStyle = .none
+        
+        txtPublish.text = format.string(from: datePicker.date)
+        self.view.endEditing(true)
     }
     
     /*
