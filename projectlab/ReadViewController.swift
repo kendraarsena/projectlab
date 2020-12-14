@@ -16,6 +16,8 @@ class ReadViewController: UIViewController {
     @IBOutlet weak var lblContent: UILabel!
     @IBOutlet weak var image: UIImageView!
     
+    var date = Date()
+    
     var newstitle:String?
     var content:String?
     var publish:String?
@@ -24,12 +26,19 @@ class ReadViewController: UIViewController {
     var index:Int?
     
     override func viewDidLoad() {
+        
+        let dateString = publish
+        let dateformat = DateFormatter()
+        dateformat.dateFormat = "dd-MM-YYYY"
+        
         super.viewDidLoad()
         lblTitle.text = newstitle
-        lblPublish.text = publish
+        lblPublish.text = dateString
+        date = dateformat.date(from: dateString!)!
         lblContent.text = content
         lblWriter.text = writer
         image.image = UIImage(data: thumbnail!)
+        
         // Do any additional setup after loading the view.
     }
     
