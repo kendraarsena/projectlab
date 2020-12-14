@@ -27,6 +27,8 @@ class Table: UITableViewCell{
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
     
+    @IBOutlet weak var lblWelcome: UILabel!
+    
     var cellnum:Int?
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -75,6 +77,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        lblWelcome.text = welcome
         
         tableView.delegate = self
         tableView.dataSource = self
