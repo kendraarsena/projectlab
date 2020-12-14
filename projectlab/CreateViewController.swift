@@ -19,6 +19,8 @@ class CreateViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     var context:NSManagedObjectContext!
     
+    let datePicker = UIDatePicker()
+    
     var image:UIImage?
     
     override func viewDidLoad() {
@@ -26,6 +28,7 @@ class CreateViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
+        createDatePicker()
         // Do any additional setup after loading the view.
     }
     
@@ -90,6 +93,27 @@ class CreateViewController: UIViewController, UIImagePickerControllerDelegate, U
         } catch {
             print("save failed")
         }
+    }
+    
+    func createDatePicker(){
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let doneBtn = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(done))
+        toolbar.setItems([doneBtn], animated: true)
+        
+        txtPublish.inputAccessoryView = toolbar
+        txtPublish.inputView = datePicker
+        datePicker.datePickerMode = .date
+    }
+    
+    @objc func done(){
+        let format = DateFormatter()
+        format.dateStyle = .medium
+        format.timeStyle = .none
+        
+        txtPublish.text = format.string(from: datePicker.date)
+        self.view.endEditing(true)
     }
     
     func showAlert(title: String, message: String) {
