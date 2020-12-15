@@ -109,8 +109,9 @@ class CreateViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     @objc func done(){
         let format = DateFormatter()
-        format.dateStyle = .medium
-        format.timeStyle = .none
+        format.dateFormat = "dd-MM-YYYY"
+//        format.dateStyle = .medium
+//        format.timeStyle = .none
         
         txtPublish.text = format.string(from: datePicker.date)
         self.view.endEditing(true)
