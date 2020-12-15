@@ -27,14 +27,14 @@ class ReadViewController: UIViewController {
     
     override func viewDidLoad() {
         
-        let dateString = publish
+        let dateString = publish!
         let dateformat = DateFormatter()
         dateformat.dateFormat = "dd-MM-YYYY"
         
         super.viewDidLoad()
         lblTitle.text = newstitle
         lblPublish.text = dateString
-        date = dateformat.date(from: dateString!)!
+//        date = dateformat.date(from: dateString)!
         lblContent.text = content
         lblWriter.text = writer
         image.image = UIImage(data: thumbnail!)

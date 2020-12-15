@@ -92,6 +92,23 @@ class EditViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         }
     }
     
+    @IBAction func btnDelete(_ sender: Any) {
+        let title = arrNews[index!].title
+        let requests = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
+        requests.predicate = NSPredicate(format: "title==%@", title!)
+        
+        do {
+            let results = try context.fetch(requests) as! [NSManagedObject]
+            for data in results {
+                context.delete(data)
+            }
+            try context.save()
+            performSegue(withIdentifier: "updated", sender: self)
+        } catch {
+            print("delete failed")
+        }
+    }
+    
     func createDatePicker(){
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
